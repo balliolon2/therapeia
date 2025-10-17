@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/custom_app_bar.dart';
-import 'widgets/custom_button.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/custom_button.dart';
 
 class PaymentPagePatient extends StatefulWidget {
   const PaymentPagePatient({super.key});
@@ -10,9 +10,9 @@ class PaymentPagePatient extends StatefulWidget {
 }
 
 class _PaymentPagePatientState extends State<PaymentPagePatient> {
-
   final String receiverName = 'นาย ทักษิน ชินวุฒิ';
-  final String addressLine1 = '354/89 ถนน แก้วพระกต ตำบล มะขาวเปี้ยว อำเภอ มะม่วงหวาน';
+  final String addressLine1 =
+      '354/89 ถนน แก้วพระกต ตำบล มะขาวเปี้ยว อำเภอ มะม่วงหวาน';
   final String addressLine2 = 'จังหวัด กรุงเทพมหานคร 10900';
   final String coords = '(10.454545,45.9439434)';
 
@@ -20,7 +20,11 @@ class _PaymentPagePatientState extends State<PaymentPagePatient> {
   final String packInfo = 'จำนวน 3 (ชิ้น)\nราคา 593 บาท';
   final String totalText = 'รวม 593 บาท';
 
-  final List<String> shippingOptions = ['Thailand Post', 'Flash express', 'Kerry'];
+  final List<String> shippingOptions = [
+    'Thailand Post',
+    'Flash express',
+    'Kerry',
+  ];
   final List<String> paymentOptions = ['QR code', 'COD'];
 
   String selectedShipping = 'Thailand Post';
@@ -42,7 +46,10 @@ class _PaymentPagePatientState extends State<PaymentPagePatient> {
               coords: coords,
             ),
             const SizedBox(height: 16),
-            const Text('ยาที่จะสั่ง', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Text(
+              'ยาที่จะสั่ง',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             _OrderRow(
               imageAsset: 'assets/images/metronidazole.png',
@@ -70,7 +77,9 @@ class _PaymentPagePatientState extends State<PaymentPagePatient> {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('ชำระเงินด้วย: $selectedPayment • จัดส่ง: $selectedShipping'),
+                    content: Text(
+                      'ชำระเงินด้วย: $selectedPayment • จัดส่ง: $selectedShipping',
+                    ),
                   ),
                 );
               },
@@ -153,7 +162,10 @@ class _OrderRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 4),
               Text(subtitle),
@@ -194,15 +206,18 @@ class _LabeledDropdown<T> extends StatelessWidget {
         DropdownButtonFormField<T>(
           value: value,
           items: items
-              .map((e) => DropdownMenuItem<T>(value: e, child: Text(e.toString())))
+              .map(
+                (e) => DropdownMenuItem<T>(value: e, child: Text(e.toString())),
+              )
               .toList(),
           onChanged: onChanged,
           decoration: InputDecoration(
             isDense: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
           icon: const Icon(Icons.keyboard_arrow_down),
         ),

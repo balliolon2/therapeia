@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/appointments_page_patient.dart';
-import 'package:flutter_frontend/payment_page_patient.dart';
-
-import 'information_page_patient.dart';
+import 'appointments_page_patient.dart';
 import 'benefits_page_patient.dart';
-import 'login_page.dart';
-import 'widgets/custom_app_bar.dart';
-import 'widgets/landing_page_item.dart';
+import 'information_page_patient.dart';
+import 'payment_page_patient.dart';
+import '../login_page.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/landing_page_item.dart';
 
 class LandingPagePatient extends StatelessWidget {
-  final List<Map<String, String>> items = [
+  final String email;
+
+  const LandingPagePatient({super.key, required this.email});
+
+  static const List<Map<String, String>> items = [
     {'text': 'ข้อมูลส่วนตัว', 'icon': '⭐'},
     {'text': 'เช็คสิทธิ์รักษา', 'icon': '⭐'},
     {'text': 'รายการนัด', 'icon': '⭐'},
@@ -22,7 +25,7 @@ class LandingPagePatient extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Theratpeia (Landing Page)',
+        title: 'Therapeia',
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -50,9 +53,11 @@ class LandingPagePatient extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const InformationPagePatient(),
+                      builder: (context) =>
+                          InformationPagePatient(email: email),
                     ),
                   );
+                  break;
                 case 'เช็คสิทธิ์รักษา':
                   Navigator.push(
                     context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/api_service.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_textfield.dart';
 
@@ -19,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _roleSpecificController = TextEditingController();
+  final _emailController = TextEditingController();
 
   UserRole _selectedRole = UserRole.patient;
 
@@ -43,6 +45,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 32.0),
+                CustomTextField(
+                  controller: _emailController,
+                  labelText: 'อีเมล (Email)',
+                  hintText: 'Enter your Email',
+                ),
+                const SizedBox(height: 16.0),
                 CustomTextField(
                   controller: _citizenIdController,
                   labelText: 'เลขบัตรประชาชน 13 หลัก (Citizen ID)',
@@ -98,9 +106,39 @@ class _RegisterPageState extends State<RegisterPage> {
                 CustomButton(
                   text: 'สร้างบัญชีใหม่',
                   onPressed: () {
-                    // TODO: Add registration logic
-                    // if (_formKey.currentState!.validate()) { ... }
-                    Navigator.pop(context);
+                    if (_formKey.currentState!.validate()) {
+                      final role = _selectedRole == UserRole.patient
+                          ? 'PATIENT'
+                          : 'DOCTOR';
+                      final hn = _selectedRole == UserRole.patient
+                          ? _roleSpecificController.text
+                          : null;
+                      final mln = _selectedRole == UserRole.doctor
+                          ? _roleSpecificController.text
+                          : null;
+
+                      final apiService = ApiService();
+                      apiService
+                          .register(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            firstName: _firstNameController.text,
+                            lastName: _lastNameController.text,
+                            phone: _phoneController.text,
+                            citizenId: _citizenIdController.text,
+                            role: role,
+                            hn: hn,
+                            mln: mln,
+                          )
+                          .then((_) {
+                            Navigator.pop(context);
+                          })
+                          .catchError((error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(error.toString())),
+                            );
+                          });
+                    }
                   },
                   color: Colors.lightGreen[100],
                   textColor: Colors.black,
@@ -127,7 +165,10 @@ class _RoleSelector extends StatelessWidget {
   final UserRole selectedRole;
   final ValueChanged<UserRole?> onRoleChanged;
 
-  const _RoleSelector({required this.selectedRole, required this.onRoleChanged});
+  const _RoleSelector({
+    required this.selectedRole,
+    required this.onRoleChanged,
+  });
 
   @override
   Widget build(BuildContext context) {

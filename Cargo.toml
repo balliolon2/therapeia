@@ -1,3 +1,11 @@
 [workspace]
-resolver = "3"
+resolver = "2"
 members = ["backend/bin/api","backend/crates/appointment_service","backend/crates/auth_service", "backend/crates/catalog_service","backend/crates/common", "backend/crates/db", "backend/crates/diagnosis_service", "backend/crates/integration", "backend/crates/notification_service", "backend/crates/openapi", "backend/crates/order_service", "backend/crates/prescription_service", "backend/crates/profile_service", "backend/crates/shipping_service"]
+
+[workspace.dependencies]
+axum = "0.8.6"
+tokio = { version = "1.47.1", features = ["rt-multi-thread"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0"
+utoipa = { version = "5.4.0", features = ["axum_extras", "uuid", "time"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "uuid", "time"] }

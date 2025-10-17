@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+axum = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+bcrypt = "0.15"
+jsonwebtoken = "9"
+chrono = { version = "0.4", features = ["serde"] }
+common = { version = "0.1.0", path = "../common" }

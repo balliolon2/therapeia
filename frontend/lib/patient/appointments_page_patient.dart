@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/custom_app_bar.dart';
+import '../widgets/custom_app_bar.dart';
+import '../api_service.dart';
 
 class AppointmentsPagePatient extends StatefulWidget {
   const AppointmentsPagePatient({super.key});
@@ -11,45 +12,17 @@ class AppointmentsPagePatient extends StatefulWidget {
 
 class _AppointmentsPagePatientState extends State<AppointmentsPagePatient> {
   bool showUpcoming = true;
+  final ApiService _apiService = ApiService();
+  late Future<List<dynamic>> _appointmentsFuture;
 
-  final List<_Appointment> all = [
-    _Appointment(
-      department: 'Department_1',
-      doctor: 'Dr. Number One',
-      dateTime: DateTime(2024, 9, 15, 9, 0),
-      status: AppointmentStatus.confirmed,
-    ),
-    _Appointment(
-      department: 'Department_2',
-      doctor: 'Dr. Number Two',
-      dateTime: DateTime(2024, 10, 20, 14, 30),
-      status: AppointmentStatus.requested,
-    ),
-    _Appointment(
-      department: 'Department_3',
-      doctor: 'Dr. Number Three',
-      dateTime: DateTime(2024, 7, 10, 10, 0),
-      status: AppointmentStatus.canceled,
-    ),
-    _Appointment(
-      department: 'Department_4',
-      doctor: 'Dr. Number Four',
-      dateTime: DateTime(2024, 8, 5, 11, 15),
-      status: AppointmentStatus.canceled,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _appointmentsFuture = _apiService.getAppointments();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final items = all
-        .where(
-          (e) => showUpcoming
-              ? (e.status == AppointmentStatus.confirmed ||
-                    e.status == AppointmentStatus.requested)
-              : e.status == AppointmentStatus.canceled,
-        )
-        .toList();
-
     return Scaffold(
       appBar: const CustomAppBar(title: 'รายการนัด'),
       body: Padding(
@@ -67,12 +40,26 @@ class _AppointmentsPagePatientState extends State<AppointmentsPagePatient> {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: ListView.separated(
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (_, index) {
-                  final a = items[index];
-                  return _AppointmentRow(appointment: a);
+              child: FutureBuilder<List<dynamic>>(
+                future: _appointmentsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No appointments found.'));
+                  } else {
+                    final items = snapshot.data!;
+                    return ListView.separated(
+                      itemCount: items.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (_, index) {
+                        final a = items[index];
+                        return _AppointmentRow(appointment: a);
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -84,12 +71,15 @@ class _AppointmentsPagePatientState extends State<AppointmentsPagePatient> {
 }
 
 class _AppointmentRow extends StatelessWidget {
-  final _Appointment appointment;
+  final Map<String, dynamic> appointment;
 
   const _AppointmentRow({required this.appointment});
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Parse the status from the appointment data and map it to AppointmentStatus
+    const status = AppointmentStatus.confirmed;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,19 +98,21 @@ class _AppointmentRow extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     TextSpan(
-                      text: appointment.department,
+                      text:
+                          appointment['notes'] ??
+                          'N/A', // Example: Replace with actual department field
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
             ),
-            _StatusChip(status: appointment.status),
+            _StatusChip(status: status),
           ],
         ),
         const SizedBox(height: 4),
         Text(
-          appointment.doctor,
+          'Doctor ID: ${appointment['doctor_id']}', // Example: Replace with actual doctor name field
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
@@ -130,7 +122,8 @@ class _AppointmentRow extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                appointment.dateTime.toLocal().toString().substring(0, 16),
+                // TODO: Parse and format the date correctly
+                appointment['start_time']?.toString() ?? 'N/A',
                 style: const TextStyle(fontSize: 13, color: Colors.black87),
               ),
             ),
@@ -281,18 +274,4 @@ class _SegmentedSwitch extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Appointment {
-  final String department;
-  final String doctor;
-  final DateTime dateTime;
-  final AppointmentStatus status;
-
-  const _Appointment({
-    required this.department,
-    required this.doctor,
-    required this.dateTime,
-    required this.status,
-  });
 }

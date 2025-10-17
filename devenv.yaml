@@ -6,6 +6,5 @@ inputs:
     inputs:
       nixpkgs:
         follows: nixpkgs
-
-secretspec:
-  enable: true
+# secretspec:
+#   enable: true

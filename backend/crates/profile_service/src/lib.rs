@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use axum::{Router, routing::get};
+use sqlx::PgPool;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod handlers;
+mod models;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub fn router(pool: PgPool) -> Router {
+    Router::new()
+        .route("/profiles/patient", get(handlers::get_patient_profile))
+        .route(
+            "/profiles/doctor",
+            get(handlers::get_doctor_profile).put(handlers::update_doctor_profile),
+        )
+        .with_state(pool)
 }
